@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#define HEADER_TYPE 'M' * 256 + 'B'
+#define HEADER_TYPE 19778
 #define HEADER_RESERVED 0
 #define HEADER_OFFBITS 54
 #define HEADER_SIZE  40
@@ -54,7 +54,9 @@ enum readStatus fromBmp(FILE* in, struct image* img) {
             setPixel(img, x, y, p);
         }
         // Skip padding
-        fseek(in, paddingSize, SEEK_CUR);
+        if (fseek(in, paddingSize, SEEK_CUR) != 0) {
+            return READ_INVALID_BITS;
+        }
     }
 
     return READ_OK;
@@ -91,7 +93,7 @@ enum writeStatus toBmp(FILE* out, const struct image* img) {
     for (size_t _y = img->height; _y > 0; _y--) {
         size_t y = _y - 1;
 
-        uint8_t* scanLine = (uint8_t*) malloc(lineSize);
+        uint8_t* scanLine = malloc(lineSize);
 
         // Make BGR
         for (size_t x = 0; x < img->width; x++) {
