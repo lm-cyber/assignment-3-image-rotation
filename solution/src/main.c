@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
         }
 
         if (fclose(in) != 0) {
-            pritnf("Failed to close source file\n");
+            printf("Failed to close source file\n");
             return 1;
         }
 
