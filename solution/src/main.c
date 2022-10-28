@@ -9,13 +9,13 @@ int main(int argc, char** argv) {
         printf("Not enough arguments\n");
     } else {
         FILE* in = fopen(argv[1], "rb");
-        struct image* img = createImage(0, 0);
-        enum readStatus rs = fromBmp(in, img);
+        struct image img = {0};
+        enum readStatus rs = fromBmp(in, &img);
 
         switch (rs) {
             case READ_OK:
                 printf("File loaded\n");
-                printf("Width: %" PRIu64 "\nHeight: %" PRIu64 "\n", img->width, img->height);
+                printf("Width: %" PRIu64 "\nHeight: %" PRIu64 "\n", img.width, img.height);
                 break;
             case READ_INVALID_SIGNATURE:
                 printf("Failed to load image: Invalid signature\n");
@@ -33,11 +33,11 @@ int main(int argc, char** argv) {
 
         fclose(in);
 
-        struct image* rotated = rotate(img);
-        destroyImage(img);
+        struct image rotated = rotate(&img);
+        destroyImage(&img);
 
         FILE* out = fopen(argv[2], "wb");
-        enum writeStatus ws = toBmp(out, rotated);
+        enum writeStatus ws = toBmp(out, &rotated);
         
         switch (ws) {
             case WRITE_OK:
@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
                 break;
         }
 
-        destroyImage(rotated);
+        destroyImage(&rotated);
         fclose(out);
     }
     
